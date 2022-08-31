@@ -4,6 +4,7 @@
 load_var() {
     PRO_URL="https://jihulab.com/jetsung/nvim.git"
     PLUG_FILE="${XDG_DATA_HOME:-$HOME/.local/share}/nvim/site/autoload/plug.vim"
+    TMP_FOLDER="/tmp/nvim"
 }
 
 # Get OS
@@ -62,15 +63,14 @@ online_install()  {
     check_in_china
     plug_install
 
-    local TMP_FOLDER="/tmp/nvim"
-    [[ -d "${TMP_FOLDER}" ]] && rm -rf "${TMP_FOLDER}"
+    if [[ ! -d "${TMP_FOLDER}" ]]; then
+        echo "Online install"
+        [[ -z "${IN_CHINA}" ]] && PRO_URL=${PRO_URL//jihulab//github}
+        git clone "${PRO_URL}" "${TMP_FOLDER}"
 
-    echo "Online install"
-    [[ -z "${IN_CHINA}" ]] && PRO_URL=${PRO_URL//jihulab//github}
-    git clone "${PRO_URL}" "${TMP_FOLDER}"
-
-    cd "${TMP_FOLDER}"
-    ./install.sh -i
+        cd "${TMP_FOLDER}"
+        ./install.sh -i
+    fi
 }
 
 plug_install() {
@@ -163,6 +163,7 @@ Options:
 
   -i           : Install vim-plug
   -r           : Reinstall vim-plug and update plugins
+  -u           : Upgrade vim-plug
   -h | --help  : Help
 \n"
 }
@@ -193,11 +194,17 @@ main() {
             fi
 
             # 更新项目文件
-            if [[ "${2}" = "-u" || "${2}" = "upgrade" ]]; then
+            if [[ "${2}" = "-u" || "${2}" = "update" ]]; then
                 git pull origin main
             fi
 
             set_plugins
+        ;;
+
+        -u | --upgrade)
+            cd ${HOME}
+            [[ -d "${TMP_FOLDER}"]] && rm -rf "${TMP_FOLDER}"
+            online_install
         ;;
 
         -h | --help)
