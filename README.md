@@ -11,10 +11,10 @@
 ## 安装
 ```bash
 # 国内
-curl -fsL https://jihulab.com/jetsung/nvim/-/raw/main/install.sh | bash
+curl -fsL https://jihulab.com/jetsung/nvim/raw/main/install.sh | bash
 
 # 国外
-curl -fsL https://github.com/jetsung/nvim/-/raw/main/install.sh | bash
+curl -fsL https://github.com/jetsung/nvim/raw/main/install.sh | bash
 ```
 
 ## Vim 安装

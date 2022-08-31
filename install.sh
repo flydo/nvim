@@ -48,7 +48,11 @@ install_neovim() {
         if [[ "${PKG_NAME}" = "brew" ]]; then
             ${PKG_NAME} install nvim gsed
         else
-            sudo ${PKG_NAME} install nvim
+            if [[ $(id -u) -eq 0 ]]; then
+                ${PKG_NAME} install nvim
+            else
+                sudo ${PKG_NAME} install nvim
+            fi
         fi
     fi
 }
