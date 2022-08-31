@@ -49,9 +49,9 @@ install_neovim() {
             ${PKG_NAME} install nvim gsed
         else
             if [[ $(id -u) -eq 0 ]]; then
-                ${PKG_NAME} install nvim
+                ${PKG_NAME} install neovim -y
             else
-                sudo ${PKG_NAME} install nvim
+                sudo ${PKG_NAME} install neovim -y
             fi
         fi
     fi
