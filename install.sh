@@ -31,7 +31,7 @@ check_in_china() {
     urlstatus=$(curl -s -m 2 -IL https://google.com | grep 200)
     [[ -z "${urlstatus}" ]] && IN_CHINA="Yes"
     # unset IN_CHINA
-    echo $IN_CHINA
+    # echo $IN_CHINA
 }
 
 
@@ -55,7 +55,7 @@ install_neovim() {
 # Online install nvim
 online_install()  {
     echo "Online install"
-    TMP_FOLDER="/tmp/nvim"
+    local TMP_FOLDER="$(mktemp -d)/nvim"
     if [[ ! -d "${TMP_FOLDER}" ]]; then
         load_var
         check_in_china
@@ -64,7 +64,7 @@ online_install()  {
         git clone "${PRO_URL}" "${TMP_FOLDER}"
 
         cd "${TMP_FOLDER}"
-        ./install.sh init
+        ./install.sh -i
     fi
 }
 
@@ -165,13 +165,18 @@ main() {
     install_neovim
 
     case "${1}" in
-        -i | init)
-            set_plugins
-        ;;
+        -i | init | -r | reinstall)
+            # 重装
+            if [[ "${1}" = "-r" || "${1}" = "reinstall" ]]; then
+                local NVIM_CONF="${HOME}/.config/nvim/"
+                [[ -d "${NVIM_CONF}" ]] && rm -rf "${NVIM_CONF}"
+            fi
 
-        -r | reinstall)
-            local NVIM_CONF="${HOME}/.config/nvim/"
-            [[ -d "${NVIM_CONF}" ]] && rm -rf "${NVIM_CONF}"
+            # 更新项目文件
+            if [[ "${2}" = "-u" || "${2}" = "upgrade" ]]; then
+                git pull origin main
+            fi
+
             set_plugins
         ;;
 
