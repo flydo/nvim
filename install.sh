@@ -203,7 +203,7 @@ main() {
 
         -u | --upgrade)
             cd ${HOME}
-            [[ -d "${TMP_FOLDER}"]] && rm -rf "${TMP_FOLDER}"
+            [[ -d "${TMP_FOLDER}" ]] && rm -rf "${TMP_FOLDER}"
             online_install
         ;;
 
