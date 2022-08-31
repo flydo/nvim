@@ -3,6 +3,7 @@
 # Load var
 load_var() {
     PRO_URL="https://jihulab.com/jetsung/nvim.git"
+    PLUG_FILE="${XDG_DATA_HOME:-$HOME/.local/share}/nvim/site/autoload/plug.vim"
 }
 
 # Get OS
@@ -54,17 +55,24 @@ install_neovim() {
 
 # Online install nvim
 online_install()  {
+    check_in_china
+    plug_install
+
+    local TMP_FOLDER="/tmp/nvim"
+    [[ -d "${TMP_FOLDER}" ]] && rm -rf "${TMP_FOLDER}"
+
     echo "Online install"
-    local TMP_FOLDER="$(mktemp -d)/nvim"
-    if [[ ! -d "${TMP_FOLDER}" ]]; then
-        load_var
-        check_in_china
+    [[ -z "${IN_CHINA}" ]] && PRO_URL=${PRO_URL//jihulab//github}
+    git clone "${PRO_URL}" "${TMP_FOLDER}"
 
-        [[ -z "${IN_CHINA}" ]] && PRO_URL=${PRO_URL//jihulab//github}
-        git clone "${PRO_URL}" "${TMP_FOLDER}"
+    cd "${TMP_FOLDER}"
+    ./install.sh -i
+}
 
-        cd "${TMP_FOLDER}"
-        ./install.sh -i
+plug_install() {
+    if [[ ! -f "${PLUG_FILE}" ]]; then
+        [[ -z "${IN_CHINA}" ]] || GH="https://ghproxy.com/"
+        curl -fsLo "${PLUG_FILE}" --create-dirs "${GH}https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim"
     fi
 }
 
@@ -78,7 +86,6 @@ sedi() {
 
 # Set plugins
 set_plugins() {
-    get_os
     if [[ "${OS}" = "darwin" ]]; then
         chkcmd "gsed" || brew install gsed
     fi
@@ -157,6 +164,9 @@ Options:
 }
 
 main() {
+    get_os
+    load_var
+
     if [[ $# -eq 0 ]]; then
         online_install
         exit
@@ -166,10 +176,16 @@ main() {
 
     case "${1}" in
         -i | init | -r | reinstall)
+            plug_install
+
             # 重装
             if [[ "${1}" = "-r" || "${1}" = "reinstall" ]]; then
                 local NVIM_CONF="${HOME}/.config/nvim/"
                 [[ -d "${NVIM_CONF}" ]] && rm -rf "${NVIM_CONF}"
+                [[ -f "${PLUG_FILE}" ]] && rm -rf "${PLUG_FILE}"
+
+                check_in_china
+                plug_install
             fi
 
             # 更新项目文件
