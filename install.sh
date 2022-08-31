@@ -56,6 +56,8 @@ install_neovim() {
             fi
         fi
     fi
+
+    set_vi_alias
 }
 
 # Online install nvim
@@ -155,6 +157,17 @@ update_plugcfg() {
     done
 }
 
+set_vi_alias() {
+    local PROFILE="${HOME}/.bashrc"
+    if [[ $(basename ${SHELL}) = 'zsh' ]]; then
+        PROFILE="${HOME}/.zshrc"
+    fi
+    if [ -z "`grep 'alias vi=nvim' ${PROFILE}`" ];then
+        printf "\n## NeoVim\n" >> "${PROFILE}"
+        echo "alias vi=nvim" >> "${PROFILE}"
+    fi
+}
+
 # Show help
 show_help() {
     printf "${0}
@@ -171,13 +184,12 @@ Options:
 main() {
     get_os
     load_var
+    install_neovim
 
     if [[ $# -eq 0 ]]; then
         online_install
         exit
     fi
-
-    install_neovim
 
     case "${1}" in
         -i | init | -r | reinstall)
