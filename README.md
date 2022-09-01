@@ -5,6 +5,12 @@
 - **NeoVim 项目**：https://github.com/neovim/neovim
 - **NeoVim 官网**：https://neovim.io/
 
+**其它类 vi 软件**
+- LunarVim: https://github.com/LunarVim/LunarVim **(配置)**
+  > https://www.lunarvim.org
+- SpaceVim: https://github.com/SpaceVim/SpaceVim **(配置)**
+  > https://spacevim.org 
+
 ## 前置条件
 > **已安装**：`curl,git`
 

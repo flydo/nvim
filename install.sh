@@ -4,6 +4,10 @@
 load_var() {
     PRO_URL="https://jihulab.com/jetsung/nvim.git"
     PLUG_FILE="${XDG_DATA_HOME:-$HOME/.local/share}/nvim/site/autoload/plug.vim"
+
+    NVIM_CONF_FILE="${HOME}/.config/nvim/init.vim"
+    NVIM_CONF="${NVIM_CONF_FILE%/*}"
+    
     TMP_FOLDER="/tmp/nvim"
 }
 
@@ -72,10 +76,13 @@ online_install() {
         
         [[ -z "${IN_CHINA}" ]] && PRO_URL=${PRO_URL//jihulab//github}
         git clone "${PRO_URL}" "${TMP_FOLDER}"
-
         cd "${TMP_FOLDER}"
-        ./install.sh -i
+    else
+        cd "${TMP_FOLDER}" 
+        git pull origin main
     fi
+
+    ./install.sh --reinstall update
 }
 
 plug_install() {
@@ -99,21 +106,18 @@ set_plugins() {
         chkcmd "gsed" || brew install gsed
     fi
 
-    local NVIM_CONF="${HOME}/.config/nvim/init.vim"
-    if [[ ! -f "${NVIM_CONF}" ]]; then
-        local TMP_F1="${NVIM_CONF%/*}"
-        
-        [[ -d "${TMP_F1}" ]] || mkdir -p "${TMP_F1}"
-        cp ./init.vim "${TMP_F1}"
+    if [[ ! -f "${NVIM_CONF_FILE}" ]]; then
+        [[ -d "${NVIM_CONF}" ]] || mkdir -p "${NVIM_CONF}"
+        cp ./init.vim "${NVIM_CONF}/"
     fi
 
     local GIT_PLUGIN="./plugin/plugin.vim"
     local GIT_PLUGCFG="./plugin/plugcfg.vim"
-    local PLUGIN_HAS=$(grep 'call plug#begin' "${NVIM_CONF}")
+    local PLUGIN_HAS=$(grep 'call plug#begin' "${NVIM_CONF_FILE}")
     local UPDATED
     if [[ -z "${PLUGIN_HAS}" ]]; then
-        cat "${GIT_PLUGIN}" >>"${NVIM_CONF}"
-        cat "${GIT_PLUGCFG}" >>"${NVIM_CONF}"
+        cat "${GIT_PLUGIN}" >>"${NVIM_CONF_FILE}"
+        cat "${GIT_PLUGCFG}" >>"${NVIM_CONF_FILE}"
         UPDATED="Yes"
     else
         install_plugins
@@ -130,13 +134,12 @@ install_plugins() {
     IFS=$'\n'
     for PLUG in $(cat "${GIT_PLUGIN}" | grep "Plug "); do
         local PLUGIN=$(echo "${PLUG}" | cut -d "'" -f2)
-        local PLUGIN_EXIST=$(grep "${PLUGIN}" "${NVIM_CONF}")
-
+        local PLUGIN_EXIST=$(grep "${PLUGIN}" "${NVIM_CONF_FILE}")
         if [[ -z "${PLUGIN_EXIST}" ]]; then
-            local LINE_END=$(cat "${NVIM_CONF}" | grep -n 'call plug#end()' | cut -d ':' -f1)
+            local LINE_END=$(cat "${NVIM_CONF_FILE}" | grep -n 'call plug#end()' | cut -d ':' -f1)
             # 在 call plug#end() 前追加内容
             printf "Add Plugin ${NUM}: %s\n" "${PLUGIN}"
-            sedi -i "${LINE_END} i${PLUG}" "${NVIM_CONF}"
+            sedi -i "${LINE_END} i${PLUG}" "${NVIM_CONF_FILE}"
 
             NUM=$(expr ${NUM} + 1)
             UPDATED="Yes"
@@ -177,6 +180,7 @@ update_plugcfg() {
     done
 }
 
+# 设置 nvim 软链接为 vi
 set_vi_alias() {
     local PROFILE="${HOME}/.bashrc"
     if [[ $(basename ${SHELL}) = 'zsh' ]]; then
@@ -188,16 +192,23 @@ set_vi_alias() {
     fi
 }
 
-# Show help
+# 删除配置信息
+remove_config() {
+    [[ -d "${NVIM_CONF}" ]] && rm -rf "${NVIM_CONF}"
+    [[ -f "${PLUG_FILE}" ]] && rm -rf "${PLUG_FILE}"
+}
+
+# 显示帮助信息
 show_help() {
     printf "${0}
 
 Options:
 
-  -i | install   : Install vim-plug
-  -r | reinstall : Reinstall vim-plug and update plugins
-  -u | upgrade   : Upgrade vim-plug
-  -h | --help    : Help
+  --install   : Install vim-plug
+  --reinstall : Reinstall vim-plug and update plugins
+  --upgrade   : Upgrade vim-plug
+  --uninstall : Remove vim-plug
+  -h | --help : Help
 \n"
 }
 
@@ -212,30 +223,38 @@ main() {
     fi
 
     case "${1}" in
-    -i | install | -r | reinstall)
-        # 重装
-        if [[ "${1}" = "-r" || "${1}" = "reinstall" ]]; then
-            local NVIM_CONF="${HOME}/.config/nvim/"
-            [[ -d "${NVIM_CONF}" ]] && rm -rf "${NVIM_CONF}"
-            [[ -f "${PLUG_FILE}" ]] && rm -rf "${PLUG_FILE}"
-        fi
-
+    --install | --reinstall)
         check_in_china
         plug_install
+        
+        # 更新项目
+        [[ "${2}" = "update" ]] && git pull origin main
 
-        # 更新项目文件
-        if [[ "${2}" = "-u" || "${2}" = "update" ]]; then
-            git pull origin main
-        fi
+        # 重装
+        [[ "${1}" = "--reinstall" ]] && remove_config
 
         set_plugins
         ;;
 
-    -u | --upgrade)
+    --upgrade)
         cd ${HOME}
         [[ -d "${TMP_FOLDER}" ]] && rm -rf "${TMP_FOLDER}"
         online_install
         ;;
+
+    --uninstall)
+        [[ -d "${NVIM_CONF}" ]] && rm -rf "${NVIM_CONF}"
+        if [[ ! -f "${NVIM_CONF_FILE}" ]]; then
+            [[ -d "${NVIM_CONF}" ]] || mkdir -p "${NVIM_CONF}"
+            cp "${TMP_FOLDER}/init.vim" "${NVIM_CONF}/"
+        fi
+
+        if [[ -f "${PLUG_FILE}" ]]; then
+            nvim +:PlugClean
+            rm -rf "${PLUG_FILE}"
+        fi
+        ;;
+        
 
     -h | --help)
         show_help
