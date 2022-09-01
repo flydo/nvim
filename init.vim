@@ -1,136 +1,66 @@
-" ************************************************* Basic Setting "
+" ************************************************* Basic Setting 
 
 
-" ====================================== "
-" 基础配置 "
-" ====================================== "
-
-" 不兼容vi命令 "
-set nocompatible
-
-" 打开语法高亮 "
-syntax on
-
-" 开启文件类型检查，并且载入与该类型对应的缩进规则。"
-filetype indent on
-
-" 在底部状态栏显示当前模式，如插入、命令模式 "
-set showmode
-
-" 在命令模式下显示当前命令，如输入2y时，会在状态栏显示命令，再次输入y时，执行命令，状态栏命令消失 "
-set showcmd
-
-" 是否显示状态栏。0表示不显示，1表示只在多窗口时显示，2表示显示 "
-set laststatus=2
-
-" 在状态栏显示光标的当前位置 "
-set  ruler
-
-" 支持鼠标 "
-set mouse=a
+" ====================================== 
+" 基础配置 
+" ====================================== 
+"  syntax on " 打开语法高亮  
+"  filetype indent on " 开启文件类型检查，并且载入与该类型对应的缩进规则 
+set cursorline   " 高亮当前行 
+set ruler        " 显示当前位置 
+set showcmd      " 在命令模式下显示当前命令 
+set showmode     " 在底部状态栏显示当前模式，如插入、命令模式 
+set nocompatible " 不兼容vi命令 
+set mouse=a      " 支持鼠标 
+set laststatus=2 " 是否显示状态栏。0表示不显示，1表示只在多窗口时显示，2表示显示 
 
 " 当前文本使用uf8编码, 解决中文乱码 "
-set fileencodings=utf-8,ucs-bom,gb18030,gbk,gb2312,cp936
+set encoding=utf-8 " 使用 UTF-8
 set termencoding=utf-8
-"set encoding=utf-8 "
+set fileencodings=utf-8,ucs-bom,gb18030,gbk,gb2312,cp936
 
-" 保留命令的历史记录数 "
-set history=1000
+set number " 显示行号 
+set wrap             " 自动折行，即太长的行分成几行显示，关闭自动折行为 set nowrap 
+set linebreak        " 只有遇到指定的符号（比如空格、连词号和其他标点符号），发生折行。也就是说，不会在单词内部折行 
+set history=1000     " 保留命令的历史记录数 
+set textwidth=100    " 设置行宽，即一行显示多少个字符 
+set scrolloff=5      " 垂直滚动时，光标距离顶部/底部的位置（单位：行） 
+set sidescrolloff=10 " 水平滚动时，光标距离行首或行尾的位置（单位：字符）。该配置在不折行时比较有用 
 
-" 显示行号 "
-set number
-
-" 光标所在的当前行高亮 "
-set cursorline
-
-" 设置行宽，即一行显示多少个字符 "
-set textwidth=100
-
-" 自动折行，即太长的行分成几行显示，关闭自动折行为 set nowrap "
-set wrap
-
-" 只有遇到指定的符号（比如空格、连词号和其他标点符号），才发生折行。也就是说，不会在单词内部折行 "
-set linebreak
-
-" 垂直滚动时，光标距离顶部/底部的位置（单位：行） "
-set scrolloff=5
-
-" 水平滚动时，光标距离行首或行尾的位置（单位：字符）。该配置在不折行时比较有用 "
-set sidescrolloff=10
-
-
-" ====================================== "
-" 缩进相关配置 "
-" ====================================== "
-
-" 按下 Tab 时显示的空格数 "
-set tabstop=4
-
-" Tab 转化为多少个空格 "
-set softtabstop=4
-
-" 执行移位操作 `>> 或 <<` 时，显示的空格数 "
-set shiftwidth=4
-
-" 由于 tab 键在不同的编辑器缩进不一致，该设置自动将 Tab 转为空格 "
-set expandtab
-
-" 自动缩略，当按下回车时，自动与上一行的缩进保持一致 "
-set autoindent
+" ====================================== 
+" 缩进相关配置 
+" ====================================== 
+set expandtab     " 缩进时将 Tab 制表符转为空格 
+set autoindent    " 自动缩进 
+set shiftwidth=4  " 设置自动缩进宽度为 4 
+set tabstop=4     " 设置 Tab 制表符所占宽度为 4 
+set softtabstop=4 " 设置按 Tab 时缩进宽度为 4 
 
 
 " ====================================== "
 " 搜索相关配置 "
 " ====================================== "
-
-" 光标遇到 {[()]} 时，会高亮显示另一半匹配的符号 "
-set showmatch
-
-" 高亮显示搜索的词 "
-set hlsearch
-
-" 增量搜索匹配结果，即每输入一个字母都会进行匹配 "
-set incsearch
-
-" 搜索时忽略大小写 "
-set ignorecase
-
-" 如果同时打开了 ignorecase ，那么对于只有一个大写字母的搜索词，将大小写敏感；其他情况都是大小写不敏感 "
-set smartcase
-
+set hlsearch   " 搜索结果高亮 
+set showmatch  " 光标遇到 {[()]} 时，会高亮显示另一半匹配的符号 
+set incsearch  " 实时开启搜索高亮 
+set smartcase  " 设置智能大小写 
+set ignorecase " 设置忽略大小写 
 
 " ====================================== "
 " 编辑相关配置 "
 " ====================================== "
-
-" 不创建交换文件。交换文件主要用于系统崩溃时恢复文件，文件名的开头是 . ，结尾是 .swp "
-set noswapfile
-
-" 自动切换工作目录。这主要用在一个 Vim 会话之中打开多个文件的情况，默认的工作目录是打开的第一个文件的目录。该配置可以将工作目录自动切换到，正在编辑的文件的目录 "
-set autochdir
-
-" 出错时，不要发出响声 "
-set noerrorbells
-
-" 出错时，发出视觉提示，通常是屏幕闪烁 "
-set visualbell
-
-" 打开文件监视。如果在编辑过程中文件发生外部改变，就会发出提示 "
-set autoread
-
-" 命令模式下，底部操作指令按下 Tab 键自动补全
-set wildmenu
-
-" 退格键可以删除 "
-set backspace=indent,eol,start
-
+set noswapfile   " 不创建交换文件。交换文件主要用于系统崩溃时恢复文件，文件名的开头是 . ，结尾是 .swp 
+set wildmenu     " 命令模式下，底部操作指令按下 Tab 键自动补全 
+set autoread     " 打开文件监视。如果在编辑过程中文件发生外部改变，就会发出提示 
+set autochdir    " 自动切换工作目录。这主要用在一个 Vim 会话之中打开多个文件的情况，默认的工作目录是打开的第一个文件的目录。该配置可以将工作目录自动切换到，正在编辑的文件的目录 
+set visualbell   " 出错时，发出视觉提示，通常是屏幕闪烁 
+set noerrorbells " 出错时，不要发出响声 
+set clipboard=unnamedplus      " 开启系统剪切板
+set backspace=indent,eol,start " 退格键可以删除 
 
 " ====================================== "
 " 定制相关配置 "
 " ====================================== "
-
-" Esc 快捷键 (插入模式下 jk 替换 Esc )
-inoremap jk <ESC>
-
+inoremap jk <ESC> " Esc 快捷键 (插入模式下 jk 替换 Esc )
 
 " ************************************************* End Setting "

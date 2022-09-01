@@ -19,22 +19,22 @@ curl -fsL https://github.com/jetsung/nvim/raw/main/install.sh | bash
 
 ## Vim 安装
 - **官方教程**：https://github.com/neovim/neovim/wiki/Installing-Neovim
-```bash
-# Linux
-## Debian 系
-apt install neovim
-## RHEL 系
-dnf install -y neovim python3-neovim
+  ```bash
+  # Linux
+  ## Debian 系
+  apt install neovim
+  ## RHEL 系
+  dnf install -y neovim python3-neovim
 
-# MacOS
-brew reinstall neovim
-```
+  # MacOS
+  brew reinstall neovim
+  ```
 
 ## 基础设置
 - 基础配置文件
-```bash
-$HOME/.config/nvim/init.vim
-```
+  ```bash
+  $HOME/.config/nvim/init.vim
+  ```
 
 - **设置 `vi` 为 `nvim` 的别名**   
 将下述配置添加至 `~/.zshrc` 或 `~/.bashrc`
@@ -55,6 +55,6 @@ $HOME/.config/nvim/init.vim
 export GH=https://ghproxy.com/
 
 # 安装
-sh -c 'curl -fLo "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/autoload/plug.vim --create-dirs \
-       ${GH}https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
+curl -fLo "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/autoload/plug.vim --create-dirs \
+       ${GH}https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 ```
